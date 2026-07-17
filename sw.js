@@ -1,17 +1,22 @@
+const cachePrefix = 'gtech-obras';
+
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((key) => key.startsWith('gtech-obras')).map((key) => caches.delete(key))))
-      .then(() => self.registration.unregister())
+      .then((keys) => Promise.all(keys.filter((key) => key.startsWith(cachePrefix)).map((key) => caches.delete(key))))
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((key) => key.startsWith('gtech-obras')).map((key) => caches.delete(key))))
+      .then((keys) => Promise.all(keys.filter((key) => key.startsWith(cachePrefix)).map((key) => caches.delete(key))))
       .then(() => self.clients.claim())
-      .then(() => self.registration.unregister())
   );
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(fetch(event.request));
 });

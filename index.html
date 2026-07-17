@@ -12,8 +12,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="app-icon-192.png">
   <link rel="icon" type="image/png" sizes="192x192" href="app-icon-192.png">
-  <link rel="manifest" href="manifest.json?v=34">
-  <link rel="stylesheet" href="styles.css?v=34">
+  <link rel="manifest" href="manifest.json?v=35">
+  <link rel="stylesheet" href="styles.css?v=35">
 </head>
 <body>
   <section class="login-screen" id="loginScreen" aria-labelledby="loginTitle">
@@ -354,12 +354,11 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=34"></script>
-  <script src="app.js?v=34"></script>
+  <script src="supabase-config.js?v=35"></script>
+  <script src="app.js?v=35"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations()
-        .then((registrations) => registrations.forEach((registration) => registration.unregister()))
+      navigator.serviceWorker.register('sw.js?v=35')
         .catch(() => {});
     }
 
