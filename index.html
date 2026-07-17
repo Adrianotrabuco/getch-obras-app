@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gtech Servicos | Tarefas de Obras</title>
+  <meta name="theme-color" content="#17212b">
+  <meta name="application-name" content="Getch Obras">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Getch Obras">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="app-icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="app-icon-192.png">
+  <link rel="manifest" href="manifest.json?v=33">
+  <link rel="stylesheet" href="styles.css?v=33">
+</head>
+<body>
+  <section class="login-screen" id="loginScreen" aria-labelledby="loginTitle">
+    <form class="login-card" id="loginForm">
+      <img class="logo-image login-logo" src="logo-getch.png" alt="Getch Construtora">
+      <p class="eyebrow">Getch Servicos</p>
+      <h1 id="loginTitle">Entrar nas tarefas</h1>
+      <label>
+        <span>Usuario</span>
+        <select id="loginUser" required>
+          <option value="">Selecione</option>
+          <option value="Fabio">Fabio - Diretor</option>
+          <option value="Adriano">Adriano - T-I</option>
+          <option value="Allan">Allan</option>
+          <option value="Tito">Tito</option>
+          <option value="Mateus">Mateus</option>
+        </select>
+      </label>
+      <label>
+        <span>PIN</span>
+        <input id="loginPin" type="password" inputmode="numeric" placeholder="Digite o PIN" required>
+      </label>
+      <button type="submit" class="primary">Entrar</button>
+    </form>
+  </section>
+
+  <header class="topbar">
+    <div class="brand-row">
+      <div class="logo-panel">
+        <img class="logo-image top-logo" src="logo-getch.png" alt="Getch Construtora">
+      </div>
+      <div class="title-block">
+        <p class="eyebrow">Getch Servicos</p>
+        <h1>Tarefas de obras</h1>
+        <p class="session-label" id="sessionLabel"></p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-button" id="printBtn" title="Imprimir tarefas" aria-label="Imprimir tarefas">Imprimir</button>
+      <button class="icon-button" id="exportBtn" title="Salvar backup" aria-label="Salvar backup">Backup</button>
+      <label class="icon-button" title="Importar backup" aria-label="Importar backup">
+        <input type="file" id="importFile" accept="application/json">
+        Importar
+      </label>
+      <button class="icon-button logout-action" id="logoutBtn" title="Sair do app" aria-label="Sair do app">Sair</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel task-form-panel" aria-labelledby="formTitle">
+      <div class="section-heading">
+        <h2 id="formTitle">Nova tarefa</h2>
+        <p>Cadastre o servico e acompanhe as evidencias da obra.</p>
+      </div>
+
+      <form id="taskForm" class="task-form">
+        <input type="hidden" id="taskId">
+
+        <label>
+          <span>Tarefa</span>
+          <input id="title" type="text" placeholder="Ex.: Instalar tomadas no apartamento 203" required>
+        </label>
+
+        <div class="field-grid">
+          <label>
+            <span>Funcionario</span>
+            <input id="employee" type="text" list="employeeList" placeholder="Nome do responsavel" required>
+          </label>
+          <label>
+            <span>Obra / Cliente</span>
+            <input id="site" type="text" list="siteList" placeholder="Nome da obra" required>
+          </label>
+        </div>
+
+        <label class="all-employees-toggle">
+          <input id="allEmployeesToggle" type="checkbox">
+          <span>Todos os funcionarios</span>
+        </label>
+
+        <label>
+          <span>Endereco ou local</span>
+          <input id="location" type="text" placeholder="Ex.: Rua, bloco, andar, sala">
+        </label>
+
+        <div class="field-grid">
+          <label>
+            <span>Data limite</span>
+            <input id="dueDate" type="date">
+          </label>
+          <label>
+            <span>Prioridade</span>
+            <select id="priority">
+              <option value="Normal">Normal</option>
+              <option value="Alta">Alta</option>
+              <option value="Urgente">Urgente</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          <span>Detalhes do servico</span>
+          <textarea id="notes" rows="4" placeholder="Materiais, observacoes, combinado com cliente..."></textarea>
+        </label>
+
+        <section class="task-instruction-upload" aria-label="Instrucao em audio ou video">
+          <div class="section-heading compact">
+            <h2>Instrucao para o funcionario</h2>
+            <p>Opcional: envie audio ou video explicando a tarefa.</p>
+          </div>
+          <div class="upload-row">
+            <button class="secondary" id="recordInstructionAudioBtn" type="button">Gravar audio</button>
+            <button class="secondary" id="stopInstructionAudioBtn" type="button" disabled>Parar</button>
+            <label class="upload-button">
+              Escolher audio
+              <input id="taskInstructionAudio" type="file" accept="audio/*" capture>
+            </label>
+            <label class="upload-button">
+              Video da tarefa
+              <input id="taskInstructionVideo" type="file" accept="video/*" capture="environment">
+            </label>
+          </div>
+          <div class="instruction-recording-status" id="instructionRecordingStatus">Nenhum audio gravado.</div>
+        </section>
+
+        <div class="form-actions">
+          <button type="button" class="secondary" id="clearBtn">Limpar</button>
+          <button type="submit" class="primary" id="saveBtn">Salvar tarefa</button>
+        </div>
+      </form>
+
+      <section class="user-admin-panel" id="userAdminPanel" aria-labelledby="usersTitle">
+        <div class="section-heading compact">
+          <h2 id="usersTitle">Cadastrar usuario</h2>
+          <p>Fabio e Adriano podem cadastrar novos acessos.</p>
+        </div>
+        <form class="user-form" id="userForm">
+          <label>
+            <span>Nome</span>
+            <input id="newUserName" type="text" placeholder="Nome do funcionario" required>
+          </label>
+          <div class="field-grid">
+            <label>
+              <span>PIN</span>
+              <input id="newUserPin" type="text" inputmode="numeric" placeholder="Ex.: 1234" required>
+            </label>
+            <label>
+              <span>Tipo</span>
+              <select id="newUserRole">
+                <option value="funcionario">Funcionario</option>
+                <option value="responsavel">Responsavel</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit" class="primary user-save-btn">Salvar usuario</button>
+        </form>
+        <div class="user-list" id="userList"></div>
+      </section>
+
+      <section class="inventory-form-panel" aria-labelledby="inventoryFormTitle">
+        <div class="section-heading compact">
+          <h2 id="inventoryFormTitle">Estoque</h2>
+          <p>Fabio e Adriano controlam ferramentas, equipamentos e obras.</p>
+        </div>
+        <form class="inventory-form" id="inventoryForm">
+          <input type="hidden" id="inventoryId">
+          <input type="hidden" id="inventoryEmployee">
+          <label>
+            <span>Item</span>
+            <input id="inventoryName" type="text" placeholder="Ex.: Cimento, tomada, furadeira" required>
+          </label>
+          <label>
+            <span>Codigo / patrimonio</span>
+            <input id="inventoryCode" type="text" placeholder="Ex.: PIN-001, FUR-002">
+          </label>
+          <div class="field-grid">
+            <label>
+              <span>Quantidade</span>
+              <input id="inventoryQuantity" type="number" min="0" step="0.01" placeholder="0" required>
+            </label>
+            <label>
+              <span>Unidade</span>
+              <input id="inventoryUnit" type="text" list="unitList" placeholder="un, kg, m">
+            </label>
+          </div>
+          <div class="field-grid">
+            <label>
+              <span>Minimo</span>
+              <input id="inventoryMinimum" type="number" min="0" step="0.01" placeholder="0">
+            </label>
+            <label>
+              <span>Estado</span>
+              <select id="inventoryStatus">
+                <option value="Bom">Bom</option>
+                <option value="Com defeito">Com defeito</option>
+                <option value="Em manutencao">Em manutencao</option>
+                <option value="Perdido">Perdido</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            <span>Categoria</span>
+            <input id="inventoryCategory" type="text" list="categoryList" placeholder="Ferramenta, EPI, equipamento">
+          </label>
+          <label>
+            <span>Obra / local atual</span>
+            <input id="inventoryLocation" type="text" list="inventoryLocationList" placeholder="Estoque, nome da obra, veiculo">
+          </label>
+          <label>
+            <span>Fornecedor / observacao</span>
+            <textarea id="inventoryNotes" rows="3" placeholder="Compra, marca, patrimonio, combinado..."></textarea>
+          </label>
+          <div class="form-actions">
+            <button type="button" class="secondary" id="clearInventoryBtn">Limpar</button>
+            <button type="submit" class="primary" id="saveInventoryBtn">Salvar item</button>
+          </div>
+        </form>
+      </section>
+    </section>
+
+    <section class="work-area" aria-label="Lista de tarefas">
+      <div class="stats-grid" id="statsGrid"></div>
+
+      <div class="toolbar">
+        <label class="search">
+          <span>Buscar</span>
+          <input id="searchInput" type="search" placeholder="Funcionario, obra, tarefa...">
+        </label>
+
+        <div class="filters" aria-label="Filtros">
+          <button class="filter active" data-filter="Todas">Todas</button>
+          <button class="filter" data-filter="Pendente">Pendentes</button>
+          <button class="filter" data-filter="Em andamento">Em andamento</button>
+          <button class="filter" data-filter="Precisa ajuste">Ajustes</button>
+          <button class="filter" data-filter="Concluida">Concluidas</button>
+        </div>
+
+        <button class="refresh-button" id="refreshBtn" type="button">Atualizar tarefas</button>
+      </div>
+
+      <div class="task-list" id="taskList" aria-live="polite"></div>
+
+      <section class="inventory-area" aria-labelledby="inventoryTitle">
+        <div class="inventory-header">
+          <div>
+            <p class="eyebrow">Controle interno</p>
+            <h2 id="inventoryTitle">Estoque de ferramentas</h2>
+          </div>
+          <div class="inventory-header-actions">
+            <button class="primary inventory-new-btn" id="newInventoryBtn" type="button">Novo item</button>
+            <button class="refresh-button" id="refreshInventoryBtn" type="button">Atualizar estoque</button>
+          </div>
+        </div>
+        <div class="inventory-toolbar">
+          <label class="search">
+            <span>Buscar no estoque</span>
+            <input id="inventorySearchInput" type="search" placeholder="Item, funcionario, obra, local...">
+          </label>
+          <label>
+            <span>Obra/local</span>
+            <select id="inventoryLocationFilter">
+              <option value="">Todos</option>
+            </select>
+          </label>
+          <label>
+            <span>Responsavel</span>
+            <select id="inventoryEmployeeFilter">
+              <option value="">Todos</option>
+            </select>
+          </label>
+          <label>
+            <span>Categoria</span>
+            <select id="inventoryCategoryFilter">
+              <option value="">Todas</option>
+            </select>
+          </label>
+          <label class="inventory-low-filter">
+            <input id="inventoryLowStockFilter" type="checkbox">
+            <span>Baixo estoque</span>
+          </label>
+          <button class="secondary inventory-clear-filter" id="clearInventoryFiltersBtn" type="button">Limpar filtros</button>
+        </div>
+        <div class="inventory-list" id="inventoryList" aria-live="polite"></div>
+      </section>
+    </section>
+  </main>
+
+  <datalist id="employeeList"></datalist>
+  <datalist id="siteList"></datalist>
+  <datalist id="unitList">
+    <option value="un"></option>
+    <option value="kg"></option>
+    <option value="m"></option>
+    <option value="m2"></option>
+    <option value="caixa"></option>
+    <option value="saco"></option>
+    <option value="litro"></option>
+  </datalist>
+  <datalist id="categoryList"></datalist>
+  <datalist id="inventoryLocationList"></datalist>
+
+  <template id="taskTemplate">
+    <article class="task-card">
+      <div class="task-main">
+        <div>
+          <div class="task-meta"></div>
+          <h3></h3>
+        </div>
+        <span class="priority-badge"></span>
+      </div>
+      <p class="task-notes"></p>
+      <div class="task-info"></div>
+      <div class="task-instructions"></div>
+      <div class="evidence-summary"></div>
+      <div class="evidence-grid"></div>
+      <div class="extra-evidence"></div>
+      <label class="execution-field">
+        <span>Descricao do servico executado</span>
+        <textarea class="execution-description" rows="3" placeholder="Ex.: Pintura concluida na parede da sala, primeira demao aplicada, local limpo."></textarea>
+      </label>
+      <div class="task-footer">
+        <select class="status-select" aria-label="Alterar status">
+          <option>Pendente</option>
+          <option>Em andamento</option>
+          <option>Precisa ajuste</option>
+          <option>Concluida</option>
+        </select>
+        <label class="review-toggle">
+          <input type="checkbox" class="review-checkbox">
+          <span>Conferido</span>
+        </label>
+        <div class="card-actions">
+          <button class="text-action cloud-btn" title="Sincronizar fotos e videos no app" aria-label="Sincronizar fotos e videos no app">Sincronizar evidencias</button>
+          <button class="text-action edit-btn" title="Editar tarefa" aria-label="Editar tarefa">Editar tarefa</button>
+          <button class="text-action delete-btn" title="Excluir tarefa" aria-label="Excluir tarefa">Excluir tarefa</button>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=33"></script>
+  <script src="app.js?v=33"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js?v=33');
+    }
+  </script>
+  <div class="media-modal" id="mediaModal" hidden>
+    <div class="media-modal-backdrop" data-close-media></div>
+    <div class="media-modal-panel" role="dialog" aria-modal="true" aria-label="Evidencia ampliada">
+      <div class="media-modal-actions">
+        <a class="text-action" id="mediaModalOpen" target="_blank" rel="noopener">Abrir</a>
+        <button class="text-action" id="mediaModalDownload" type="button">Baixar</button>
+        <button class="small delete-btn" id="mediaModalClose" type="button" aria-label="Fechar">X</button>
+      </div>
+      <div class="media-modal-body" id="mediaModalBody"></div>
+    </div>
+  </div>
+</body>
+</html>
