@@ -3,7 +3,7 @@ const oldStorageKey = 'gtech-tarefas-obras-v1';
 const inventoryStorageKey = 'gtech-inventario-v1';
 const dbName = 'gtech-tarefas-obras-arquivos';
 const dbStore = 'midias';
-const appVersion = '36-painel-estoque';
+const appVersion = '37-pedidos-material';
 const sessionKey = 'gtech-sessao-v1';
 const cloudTasksTable = 'tarefas_obras';
 const cloudUsersTable = 'usuarios_app';
@@ -83,6 +83,7 @@ const stopInstructionAudioBtn = document.querySelector('#stopInstructionAudioBtn
 const instructionRecordingStatus = document.querySelector('#instructionRecordingStatus');
 const taskList = document.querySelector('#taskList');
 const statsGrid = document.querySelector('#statsGrid');
+const materialRequestNotice = document.querySelector('#materialRequestNotice');
 const searchInput = document.querySelector('#searchInput');
 const clearBtn = document.querySelector('#clearBtn');
 const saveBtn = document.querySelector('#saveBtn');
@@ -637,7 +638,8 @@ function taskToRow(task) {
       ...task.evidence,
       _extras: task.extraEvidence || [],
       _executionDescription: task.executionDescription || '',
-      _instructionMedia: task.instructionMedia || createEmptyInstructionMedia()
+      _instructionMedia: task.instructionMedia || createEmptyInstructionMedia(),
+      _taskType: task.type || ''
     },
     reviewed: task.reviewed,
     reviewed_by: task.reviewedBy,
@@ -662,6 +664,7 @@ function rowToTask(row) {
     extraEvidence: row.extra_evidence || row.evidence?._extras || [],
     executionDescription: row.evidence?._executionDescription || '',
     instructionMedia: row.evidence?._instructionMedia || {},
+    type: row.evidence?._taskType || '',
     reviewed: row.reviewed,
     reviewedBy: row.reviewed_by,
     reviewedAt: row.reviewed_at,
@@ -753,6 +756,7 @@ function normalizeTask(task) {
       ...createEmptyInstructionMedia(),
       ...(task.instructionMedia || {})
     },
+    type: task.type || (String(task.title || '').startsWith('Solicitar material:') ? 'material_request' : ''),
     reviewed: Boolean(task.reviewed),
     reviewedBy: task.reviewedBy || '',
     reviewedAt: task.reviewedAt || '',
@@ -869,6 +873,7 @@ async function requestInventoryItem() {
       details.trim() ? `Detalhe: ${details.trim()}` : ''
     ].filter(Boolean).join('\n'),
     status: 'Pendente',
+    type: 'material_request',
     evidence: createEmptyEvidence(),
     extraEvidence: [],
     instructionMedia: createEmptyInstructionMedia(),
@@ -1092,6 +1097,7 @@ async function render() {
   revokeMediaUrls();
   renderStats();
   renderLists();
+  renderMaterialRequestNotice();
 
   if (!currentUser) {
     taskList.innerHTML = '<div class="empty">Entre com seu usuario para ver as tarefas.</div>';
@@ -1125,7 +1131,9 @@ async function render() {
   }
 
   for (const task of filtered) {
+    const materialRequest = isMaterialRequest(task);
     const card = template.content.firstElementChild.cloneNode(true);
+    card.classList.toggle('material-request-card', materialRequest);
     card.classList.toggle('status-concluida', task.status === 'Concluida');
     card.classList.toggle('status-ajuste', task.status === 'Precisa ajuste');
     card.classList.toggle('status-conferida', task.reviewed);
@@ -1135,7 +1143,7 @@ async function render() {
     card.querySelector('.task-meta').textContent = `${task.employee} - ${task.site}`;
     card.querySelector('.task-notes').textContent = task.notes || 'Sem observacoes adicionais.';
     card.querySelector('.task-info').textContent = buildInfoLine(task);
-    card.querySelector('.task-instructions').replaceWith(await createInstructionBox(task));
+    card.querySelector('.task-instructions').replaceWith(materialRequest ? document.createElement('div') : await createInstructionBox(task));
     const summary = card.querySelector('.evidence-summary');
     const missing = missingEvidenceItems(task);
     summary.textContent = evidenceSummary(task);
@@ -1155,15 +1163,24 @@ async function render() {
     badge.classList.toggle('high', task.priority === 'Alta');
 
     const evidenceGrid = card.querySelector('.evidence-grid');
-    for (const stage of stages) {
-      evidenceGrid.appendChild(await createEvidenceBox(task, stage));
-    }
+    if (materialRequest) {
+      evidenceGrid.remove();
+      card.querySelector('.extra-evidence').remove();
+    } else {
+      for (const stage of stages) {
+        evidenceGrid.appendChild(await createEvidenceBox(task, stage));
+      }
 
-    card.querySelector('.extra-evidence').replaceWith(await createExtraEvidenceBox(task));
+      card.querySelector('.extra-evidence').replaceWith(await createExtraEvidenceBox(task));
+    }
     const executionDescription = card.querySelector('.execution-description');
-    executionDescription.value = task.executionDescription || '';
-    executionDescription.addEventListener('input', () => updateExecutionDescriptionLocal(task.id, executionDescription.value));
-    executionDescription.addEventListener('change', () => updateExecutionDescription(task.id, executionDescription.value));
+    if (materialRequest) {
+      executionDescription.closest('.execution-field')?.remove();
+    } else {
+      executionDescription.value = task.executionDescription || '';
+      executionDescription.addEventListener('input', () => updateExecutionDescriptionLocal(task.id, executionDescription.value));
+      executionDescription.addEventListener('change', () => updateExecutionDescription(task.id, executionDescription.value));
+    }
 
     const statusSelect = card.querySelector('.status-select');
     statusSelect.value = task.status;
@@ -1176,6 +1193,7 @@ async function render() {
 
     card.querySelector('.cloud-btn').addEventListener('click', () => uploadEvidenceToCloud(task.id));
     const cloudBtn = card.querySelector('.cloud-btn');
+    cloudBtn.hidden = materialRequest;
     if (currentUser.role === 'funcionario') {
       cloudBtn.textContent = 'Salvar e enviar';
       cloudBtn.title = 'Salvar evidencias e enviar ao responsavel';
@@ -1191,6 +1209,46 @@ async function render() {
 
     taskList.appendChild(card);
   }
+}
+
+function isMaterialRequest(task) {
+  return task?.type === 'material_request' || String(task?.title || '').startsWith('Solicitar material:');
+}
+
+function getPendingMaterialRequests() {
+  return tasks.filter((task) => isMaterialRequest(task) && task.status !== 'Concluida' && !task.reviewed);
+}
+
+function renderMaterialRequestNotice() {
+  if (!materialRequestNotice) return;
+
+  if (currentUser?.role !== 'responsavel') {
+    materialRequestNotice.hidden = true;
+    materialRequestNotice.innerHTML = '';
+    return;
+  }
+
+  const pendingRequests = getPendingMaterialRequests();
+  if (!pendingRequests.length) {
+    materialRequestNotice.hidden = true;
+    materialRequestNotice.innerHTML = '';
+    return;
+  }
+
+  materialRequestNotice.hidden = false;
+  materialRequestNotice.innerHTML = `
+    <div>
+      <strong>${pendingRequests.length} pedido(s) de material pendente(s)</strong>
+      <span>Confira os pedidos feitos pelos funcionarios.</span>
+    </div>
+    <button type="button">Ver pedidos</button>
+  `;
+  materialRequestNotice.querySelector('button')?.addEventListener('click', () => {
+    activeFilter = 'Todas';
+    document.querySelectorAll('.filter').forEach((item) => item.classList.toggle('active', item.dataset.filter === 'Todas'));
+    searchInput.value = 'Solicitar material';
+    render();
+  });
 }
 
 function renderInventory() {
@@ -2269,6 +2327,10 @@ function buildCloudPath(task, fileName) {
 }
 
 function evidenceSummary(task) {
+  if (isMaterialRequest(task)) {
+    return 'Pedido de material - nao precisa enviar foto ou video.';
+  }
+
   const total = stages.length * 2;
   const extras = task.extraEvidence?.length || 0;
   const completed = stages.reduce((count, stage) => {
@@ -2280,6 +2342,8 @@ function evidenceSummary(task) {
 }
 
 function missingEvidenceItems(task) {
+  if (isMaterialRequest(task)) return [];
+
   return stages.flatMap((stage) => {
     const item = task.evidence[stage.key] || {};
     const missing = [];
@@ -2292,6 +2356,8 @@ function missingEvidenceItems(task) {
 }
 
 function isEvidenceComplete(task) {
+  if (isMaterialRequest(task)) return true;
+
   return stages.every((stage) => {
     const item = task.evidence[stage.key];
     return item?.photoId && item?.videoId;
@@ -2299,6 +2365,8 @@ function isEvidenceComplete(task) {
 }
 
 function hasAnyEvidence(task) {
+  if (isMaterialRequest(task)) return false;
+
   return stages.some((stage) => {
     const item = task.evidence[stage.key];
     return item?.photoId || item?.videoId;
@@ -2329,18 +2397,22 @@ function renderStats() {
   const visibleTasks = currentUser?.role === 'funcionario'
     ? tasks.filter((task) => task.employee === currentUser.name || isAllEmployeesTask(task))
     : tasks;
+  const serviceTasks = visibleTasks.filter((task) => !isMaterialRequest(task));
+  const materialRequests = visibleTasks.filter(isMaterialRequest);
   const total = visibleTasks.length;
   const pending = visibleTasks.filter((task) => task.status === 'Pendente').length;
   const progress = visibleTasks.filter((task) => task.status === 'Em andamento').length;
   const done = visibleTasks.filter((task) => task.status === 'Concluida').length;
-  const incomplete = visibleTasks.filter((task) => !isEvidenceComplete(task)).length;
-  const ready = visibleTasks.filter((task) => isEvidenceComplete(task) && !task.reviewed).length;
-  const reviewed = visibleTasks.filter((task) => task.reviewed).length;
-  const late = visibleTasks.filter((task) => isLate(task)).length;
+  const incomplete = serviceTasks.filter((task) => !isEvidenceComplete(task)).length;
+  const ready = serviceTasks.filter((task) => isEvidenceComplete(task) && !task.reviewed).length;
+  const reviewed = serviceTasks.filter((task) => task.reviewed).length;
+  const late = serviceTasks.filter((task) => isLate(task)).length;
+  const pendingMaterials = materialRequests.filter((task) => task.status !== 'Concluida' && !task.reviewed).length;
 
   const stats = currentUser?.role === 'responsavel'
     ? [
       ['Total', total],
+      ['Pedidos material', pendingMaterials],
       ['Incompletas', incomplete],
       ['Prontas p/ conferir', ready],
       ['Atrasadas', late],

@@ -12,8 +12,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="app-icon-192.png">
   <link rel="icon" type="image/png" sizes="192x192" href="app-icon-192.png">
-  <link rel="manifest" href="manifest.json?v=36">
-  <link rel="stylesheet" href="styles.css?v=36">
+  <link rel="manifest" href="manifest.json?v=37">
+  <link rel="stylesheet" href="styles.css?v=37">
 </head>
 <body>
   <section class="login-screen" id="loginScreen" aria-labelledby="loginTitle">
@@ -181,6 +181,7 @@
 
     <section class="work-area" aria-label="Lista de tarefas">
       <div class="stats-grid" id="statsGrid"></div>
+      <div class="material-request-notice" id="materialRequestNotice" hidden></div>
 
       <div class="toolbar">
         <label class="search">
@@ -371,11 +372,11 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=36"></script>
-  <script src="app.js?v=36"></script>
+  <script src="supabase-config.js?v=37"></script>
+  <script src="app.js?v=37"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js?v=36')
+      navigator.serviceWorker.register('sw.js?v=37')
         .catch(() => {});
     }
 
