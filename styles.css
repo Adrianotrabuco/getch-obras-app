@@ -230,6 +230,37 @@ h1 {
   opacity: 0;
 }
 
+.module-tabs {
+  display: flex;
+  gap: 10px;
+  padding: 14px clamp(16px, 4vw, 48px) 0;
+}
+
+.module-tab {
+  border: 1px solid var(--line);
+  border-radius: 10px 10px 0 0;
+  background: #ffffff;
+  color: var(--muted);
+  font-weight: 900;
+  padding: 12px 18px;
+  min-width: 130px;
+  cursor: pointer;
+}
+
+.module-tab.active {
+  background: var(--panel);
+  color: var(--green);
+  border-bottom-color: var(--panel);
+  box-shadow: 0 -8px 18px rgba(15, 36, 47, 0.08);
+}
+
+.app-view[hidden],
+body.is-logged-out .topbar,
+body.is-logged-out .module-tabs,
+body.is-logged-out .app-view {
+  display: none;
+}
+
 .layout {
   display: grid;
   grid-template-columns: minmax(310px, 400px) minmax(0, 1fr);
@@ -307,9 +338,12 @@ h1 {
 .inventory-form-panel {
   display: grid;
   gap: 12px;
-  margin-top: 18px;
-  border-top: 1px solid var(--line);
-  padding-top: 18px;
+  align-self: start;
+  position: sticky;
+  top: 18px;
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+  padding: 18px;
   scroll-margin-top: 18px;
 }
 
@@ -534,7 +568,29 @@ textarea:focus {
 .inventory-area {
   display: grid;
   gap: 12px;
-  margin-top: 8px;
+}
+
+.inventory-request-card {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.inventory-request-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.08rem;
+}
+
+.inventory-request-card p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
 }
 
 .inventory-header,
@@ -1318,8 +1374,10 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 
-  .task-form-panel {
+  .task-form-panel,
+  .inventory-form-panel {
     position: static;
+    max-height: none;
   }
 
   .toolbar {
@@ -1339,6 +1397,14 @@ body.is-funcionario .layout {
   grid-template-columns: 1fr;
 }
 
+body.is-funcionario .inventory-form-panel {
+  display: none;
+}
+
+body.is-funcionario .inventory-request-card {
+  display: flex;
+}
+
 body.is-funcionario .card-actions {
   display: grid;
   grid-template-columns: 1fr;
@@ -1356,10 +1422,20 @@ body.is-funcionario .upload-row label {
   .task-main,
   .task-footer,
   .inventory-header,
+  .inventory-request-card,
   .inventory-card-main,
   .inventory-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .module-tabs {
+    padding-inline: 12px;
+  }
+
+  .module-tab {
+    flex: 1;
+    min-width: 0;
   }
 
   .top-actions {

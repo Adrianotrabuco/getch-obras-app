@@ -12,8 +12,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="app-icon-192.png">
   <link rel="icon" type="image/png" sizes="192x192" href="app-icon-192.png">
-  <link rel="manifest" href="manifest.json?v=35">
-  <link rel="stylesheet" href="styles.css?v=35">
+  <link rel="manifest" href="manifest.json?v=36">
+  <link rel="stylesheet" href="styles.css?v=36">
 </head>
 <body>
   <section class="login-screen" id="loginScreen" aria-labelledby="loginTitle">
@@ -62,7 +62,12 @@
     </div>
   </header>
 
-  <main class="layout">
+  <nav class="module-tabs" aria-label="Areas do app">
+    <button class="module-tab active" id="tasksTab" type="button" data-view="tasks">Tarefas</button>
+    <button class="module-tab" id="inventoryTab" type="button" data-view="inventory">Estoque</button>
+  </nav>
+
+  <main class="layout app-view active-view" id="tasksView">
     <section class="panel task-form-panel" aria-labelledby="formTitle">
       <div class="section-heading">
         <h2 id="formTitle">Nova tarefa</h2>
@@ -172,65 +177,6 @@
         <div class="user-list" id="userList"></div>
       </section>
 
-      <section class="inventory-form-panel" aria-labelledby="inventoryFormTitle">
-        <div class="section-heading compact">
-          <h2 id="inventoryFormTitle">Estoque</h2>
-          <p>Fabio e Adriano controlam ferramentas, equipamentos e obras.</p>
-        </div>
-        <form class="inventory-form" id="inventoryForm">
-          <input type="hidden" id="inventoryId">
-          <input type="hidden" id="inventoryEmployee">
-          <label>
-            <span>Item</span>
-            <input id="inventoryName" type="text" placeholder="Ex.: Cimento, tomada, furadeira" required>
-          </label>
-          <label>
-            <span>Codigo / patrimonio</span>
-            <input id="inventoryCode" type="text" placeholder="Ex.: PIN-001, FUR-002">
-          </label>
-          <div class="field-grid">
-            <label>
-              <span>Quantidade</span>
-              <input id="inventoryQuantity" type="number" min="0" step="0.01" placeholder="0" required>
-            </label>
-            <label>
-              <span>Unidade</span>
-              <input id="inventoryUnit" type="text" list="unitList" placeholder="un, kg, m">
-            </label>
-          </div>
-          <div class="field-grid">
-            <label>
-              <span>Minimo</span>
-              <input id="inventoryMinimum" type="number" min="0" step="0.01" placeholder="0">
-            </label>
-            <label>
-              <span>Estado</span>
-              <select id="inventoryStatus">
-                <option value="Bom">Bom</option>
-                <option value="Com defeito">Com defeito</option>
-                <option value="Em manutencao">Em manutencao</option>
-                <option value="Perdido">Perdido</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            <span>Categoria</span>
-            <input id="inventoryCategory" type="text" list="categoryList" placeholder="Ferramenta, EPI, equipamento">
-          </label>
-          <label>
-            <span>Obra / local atual</span>
-            <input id="inventoryLocation" type="text" list="inventoryLocationList" placeholder="Estoque, nome da obra, veiculo">
-          </label>
-          <label>
-            <span>Fornecedor / observacao</span>
-            <textarea id="inventoryNotes" rows="3" placeholder="Compra, marca, patrimonio, combinado..."></textarea>
-          </label>
-          <div class="form-actions">
-            <button type="button" class="secondary" id="clearInventoryBtn">Limpar</button>
-            <button type="submit" class="primary" id="saveInventoryBtn">Salvar item</button>
-          </div>
-        </form>
-      </section>
     </section>
 
     <section class="work-area" aria-label="Lista de tarefas">
@@ -254,49 +200,120 @@
       </div>
 
       <div class="task-list" id="taskList" aria-live="polite"></div>
+    </section>
+  </main>
 
-      <section class="inventory-area" aria-labelledby="inventoryTitle">
-        <div class="inventory-header">
-          <div>
-            <p class="eyebrow">Controle interno</p>
-            <h2 id="inventoryTitle">Estoque de ferramentas</h2>
-          </div>
-          <div class="inventory-header-actions">
-            <button class="primary inventory-new-btn" id="newInventoryBtn" type="button">Novo item</button>
-            <button class="refresh-button" id="refreshInventoryBtn" type="button">Atualizar estoque</button>
-          </div>
+  <main class="layout inventory-layout app-view" id="inventoryView" hidden>
+    <section class="panel inventory-form-panel" aria-labelledby="inventoryFormTitle">
+      <div class="section-heading">
+        <h2 id="inventoryFormTitle">Painel de estoque</h2>
+        <p>Fabio e Adriano controlam ferramentas, equipamentos e obras.</p>
+      </div>
+      <form class="inventory-form" id="inventoryForm">
+        <input type="hidden" id="inventoryId">
+        <input type="hidden" id="inventoryEmployee">
+        <label>
+          <span>Item</span>
+          <input id="inventoryName" type="text" placeholder="Ex.: Cimento, tomada, furadeira" required>
+        </label>
+        <label>
+          <span>Codigo / patrimonio</span>
+          <input id="inventoryCode" type="text" placeholder="Ex.: PIN-001, FUR-002">
+        </label>
+        <div class="field-grid">
+          <label>
+            <span>Quantidade</span>
+            <input id="inventoryQuantity" type="number" min="0" step="0.01" placeholder="0" required>
+          </label>
+          <label>
+            <span>Unidade</span>
+            <input id="inventoryUnit" type="text" list="unitList" placeholder="un, kg, m">
+          </label>
         </div>
-        <div class="inventory-toolbar">
-          <label class="search">
-            <span>Buscar no estoque</span>
-            <input id="inventorySearchInput" type="search" placeholder="Item, funcionario, obra, local...">
+        <div class="field-grid">
+          <label>
+            <span>Minimo</span>
+            <input id="inventoryMinimum" type="number" min="0" step="0.01" placeholder="0">
           </label>
           <label>
-            <span>Obra/local</span>
-            <select id="inventoryLocationFilter">
-              <option value="">Todos</option>
+            <span>Estado</span>
+            <select id="inventoryStatus">
+              <option value="Bom">Bom</option>
+              <option value="Com defeito">Com defeito</option>
+              <option value="Em manutencao">Em manutencao</option>
+              <option value="Perdido">Perdido</option>
             </select>
           </label>
-          <label>
-            <span>Responsavel</span>
-            <select id="inventoryEmployeeFilter">
-              <option value="">Todos</option>
-            </select>
-          </label>
-          <label>
-            <span>Categoria</span>
-            <select id="inventoryCategoryFilter">
-              <option value="">Todas</option>
-            </select>
-          </label>
-          <label class="inventory-low-filter">
-            <input id="inventoryLowStockFilter" type="checkbox">
-            <span>Baixo estoque</span>
-          </label>
-          <button class="secondary inventory-clear-filter" id="clearInventoryFiltersBtn" type="button">Limpar filtros</button>
         </div>
-        <div class="inventory-list" id="inventoryList" aria-live="polite"></div>
-      </section>
+        <label>
+          <span>Categoria</span>
+          <input id="inventoryCategory" type="text" list="categoryList" placeholder="Ferramenta, EPI, equipamento">
+        </label>
+        <label>
+          <span>Obra / local atual</span>
+          <input id="inventoryLocation" type="text" list="inventoryLocationList" placeholder="Estoque, nome da obra, veiculo">
+        </label>
+        <label>
+          <span>Fornecedor / observacao</span>
+          <textarea id="inventoryNotes" rows="3" placeholder="Compra, marca, patrimonio, combinado..."></textarea>
+        </label>
+        <div class="form-actions">
+          <button type="button" class="secondary" id="clearInventoryBtn">Limpar</button>
+          <button type="submit" class="primary" id="saveInventoryBtn">Salvar item</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="inventory-area" aria-labelledby="inventoryTitle">
+      <div class="inventory-request-card">
+        <div>
+          <p class="eyebrow">Funcionario</p>
+          <h2>Solicitar material ou equipamento</h2>
+          <p>Use esta area para pedir algo ao responsavel quando precisar na obra.</p>
+        </div>
+        <button class="primary" id="requestInventoryBtn" type="button">Solicitar item</button>
+      </div>
+
+      <div class="inventory-header">
+        <div>
+          <p class="eyebrow">Controle interno</p>
+          <h2 id="inventoryTitle">Estoque de ferramentas</h2>
+        </div>
+        <div class="inventory-header-actions">
+          <button class="primary inventory-new-btn" id="newInventoryBtn" type="button">Novo item</button>
+          <button class="refresh-button" id="refreshInventoryBtn" type="button">Atualizar estoque</button>
+        </div>
+      </div>
+      <div class="inventory-toolbar">
+        <label class="search">
+          <span>Buscar no estoque</span>
+          <input id="inventorySearchInput" type="search" placeholder="Item, funcionario, obra, local...">
+        </label>
+        <label>
+          <span>Obra/local</span>
+          <select id="inventoryLocationFilter">
+            <option value="">Todos</option>
+          </select>
+        </label>
+        <label>
+          <span>Responsavel</span>
+          <select id="inventoryEmployeeFilter">
+            <option value="">Todos</option>
+          </select>
+        </label>
+        <label>
+          <span>Categoria</span>
+          <select id="inventoryCategoryFilter">
+            <option value="">Todas</option>
+          </select>
+        </label>
+        <label class="inventory-low-filter">
+          <input id="inventoryLowStockFilter" type="checkbox">
+          <span>Baixo estoque</span>
+        </label>
+        <button class="secondary inventory-clear-filter" id="clearInventoryFiltersBtn" type="button">Limpar filtros</button>
+      </div>
+      <div class="inventory-list" id="inventoryList" aria-live="polite"></div>
     </section>
   </main>
 
@@ -354,11 +371,11 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=35"></script>
-  <script src="app.js?v=35"></script>
+  <script src="supabase-config.js?v=36"></script>
+  <script src="app.js?v=36"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js?v=35')
+      navigator.serviceWorker.register('sw.js?v=36')
         .catch(() => {});
     }
 

@@ -3,7 +3,7 @@ const oldStorageKey = 'gtech-tarefas-obras-v1';
 const inventoryStorageKey = 'gtech-inventario-v1';
 const dbName = 'gtech-tarefas-obras-arquivos';
 const dbStore = 'midias';
-const appVersion = '35-instalacao-online';
+const appVersion = '36-painel-estoque';
 const sessionKey = 'gtech-sessao-v1';
 const cloudTasksTable = 'tarefas_obras';
 const cloudUsersTable = 'usuarios_app';
@@ -93,6 +93,10 @@ const siteList = document.querySelector('#siteList');
 const sessionLabel = document.querySelector('#sessionLabel');
 const logoutBtn = document.querySelector('#logoutBtn');
 const userAdminPanel = document.querySelector('#userAdminPanel');
+const tasksTab = document.querySelector('#tasksTab');
+const inventoryTab = document.querySelector('#inventoryTab');
+const tasksView = document.querySelector('#tasksView');
+const inventoryView = document.querySelector('#inventoryView');
 const userForm = document.querySelector('#userForm');
 const newUserName = document.querySelector('#newUserName');
 const newUserPin = document.querySelector('#newUserPin');
@@ -121,6 +125,7 @@ const clearInventoryFiltersBtn = document.querySelector('#clearInventoryFiltersB
 const inventoryList = document.querySelector('#inventoryList');
 const newInventoryBtn = document.querySelector('#newInventoryBtn');
 const refreshInventoryBtn = document.querySelector('#refreshInventoryBtn');
+const requestInventoryBtn = document.querySelector('#requestInventoryBtn');
 const categoryList = document.querySelector('#categoryList');
 const inventoryLocationList = document.querySelector('#inventoryLocationList');
 
@@ -143,6 +148,9 @@ inventoryCategoryFilter.addEventListener('change', renderInventory);
 inventoryLowStockFilter.addEventListener('change', renderInventory);
 clearInventoryFiltersBtn.addEventListener('click', clearInventoryFilters);
 newInventoryBtn.addEventListener('click', focusInventoryForm);
+requestInventoryBtn.addEventListener('click', requestInventoryItem);
+tasksTab.addEventListener('click', () => setActiveView('tasks'));
+inventoryTab.addEventListener('click', () => setActiveView('inventory'));
 refreshBtn.addEventListener('click', refreshTasks);
 refreshInventoryBtn.addEventListener('click', refreshInventory);
 document.querySelector('#printBtn').addEventListener('click', () => window.print());
@@ -330,6 +338,23 @@ function logout() {
   renderInventory();
 }
 
+function setActiveView(view) {
+  const isInventory = view === 'inventory';
+  tasksView.hidden = isInventory;
+  inventoryView.hidden = !isInventory;
+  tasksView.classList.toggle('active-view', !isInventory);
+  inventoryView.classList.toggle('active-view', isInventory);
+  tasksTab.classList.toggle('active', !isInventory);
+  inventoryTab.classList.toggle('active', isInventory);
+
+  if (isInventory) {
+    renderInventory();
+    return;
+  }
+
+  render();
+}
+
 function applySession() {
   const logged = Boolean(currentUser);
   document.body.classList.toggle('is-logged-out', !logged);
@@ -340,7 +365,9 @@ function applySession() {
     employee.removeAttribute('readonly');
     userAdminPanel.hidden = true;
     newInventoryBtn.hidden = true;
+    requestInventoryBtn.hidden = true;
     document.body.classList.remove('is-funcionario', 'is-responsavel');
+    setActiveView('tasks');
     renderInventory();
     return;
   }
@@ -350,6 +377,7 @@ function applySession() {
   sessionLabel.textContent = users[currentUser.name].label;
   userAdminPanel.hidden = currentUser.role !== 'responsavel';
   newInventoryBtn.hidden = currentUser.role !== 'responsavel';
+  requestInventoryBtn.hidden = currentUser.role !== 'funcionario';
   renderUsers();
   if (currentUser.role === 'funcionario') {
     employee.value = currentUser.name;
@@ -816,6 +844,54 @@ async function saveTask(event) {
   }
 }
 
+async function requestInventoryItem() {
+  if (!currentUser) {
+    alert('Entre no app para solicitar material.');
+    return;
+  }
+
+  const item = prompt('Qual material ou equipamento voce precisa?');
+  if (!item || !item.trim()) return;
+
+  const place = prompt('Para qual obra ou local?') || '';
+  const details = prompt('Quantidade ou observacao?') || '';
+  const now = new Date().toISOString();
+  const payload = normalizeTask({
+    id: crypto.randomUUID(),
+    title: `Solicitar material: ${item.trim()}`,
+    employee: currentUser.name,
+    site: place.trim() || 'Solicitacao de material',
+    location: place.trim(),
+    dueDate: '',
+    priority: 'Alta',
+    notes: [
+      `Pedido feito por ${currentUser.name}.`,
+      details.trim() ? `Detalhe: ${details.trim()}` : ''
+    ].filter(Boolean).join('\n'),
+    status: 'Pendente',
+    evidence: createEmptyEvidence(),
+    extraEvidence: [],
+    instructionMedia: createEmptyInstructionMedia(),
+    reviewed: false,
+    reviewedBy: '',
+    reviewedAt: '',
+    createdAt: now
+  });
+
+  tasks.unshift(payload);
+  persist();
+
+  try {
+    await saveTaskToCloud(payload);
+    alert('Solicitacao enviada para o responsavel.');
+    setActiveView('tasks');
+    await syncFromCloud(false);
+  } catch (error) {
+    alert('Solicitacao salva neste celular, mas ainda nao subiu para a nuvem. Tente atualizar quando estiver com internet.');
+    render();
+  }
+}
+
 function getExistingTask(id) {
   return tasks.find((task) => task.id === id);
 }
@@ -993,17 +1069,18 @@ function focusInventoryForm() {
   }
 
   clearInventoryForm();
+  setActiveView('inventory');
   scrollToInventoryForm();
   setTimeout(() => inventoryName.focus(), 250);
 }
 
 function scrollToInventoryForm() {
-  const panel = document.querySelector('.task-form-panel');
+  const panel = document.querySelector('.inventory-form-panel');
   const inventoryPanel = document.querySelector('.inventory-form-panel');
 
   if (panel && inventoryPanel) {
     panel.scrollTo({
-      top: inventoryPanel.offsetTop - 12,
+      top: 0,
       behavior: 'smooth'
     });
   }
