@@ -3,23 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gtech Servicos | Tarefas de Obras</title>
+  <title>App de Tarefas</title>
   <meta name="theme-color" content="#17212b">
-  <meta name="application-name" content="Getch Obras">
+  <meta name="application-name" content="App de Tarefas">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Getch Obras">
+  <meta name="apple-mobile-web-app-title" content="App Tarefas">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="app-icon-192.png">
   <link rel="icon" type="image/png" sizes="192x192" href="app-icon-192.png">
-  <link rel="manifest" href="manifest.json?v=37">
-  <link rel="stylesheet" href="styles.css?v=37">
+  <link rel="manifest" href="manifest.json?v=38">
+  <link rel="stylesheet" href="styles.css?v=38">
 </head>
 <body>
   <section class="login-screen" id="loginScreen" aria-labelledby="loginTitle">
     <form class="login-card" id="loginForm">
-      <img class="logo-image login-logo" src="logo-getch.png" alt="Getch Construtora">
-      <p class="eyebrow">Getch Servicos</p>
+      <div class="brand-mark large" aria-hidden="true">TO</div>
+      <p class="eyebrow">App de tarefas</p>
       <h1 id="loginTitle">Entrar nas tarefas</h1>
       <label>
         <span>Usuario</span>
@@ -43,11 +43,11 @@
   <header class="topbar">
     <div class="brand-row">
       <div class="logo-panel">
-        <img class="logo-image top-logo" src="logo-getch.png" alt="Getch Construtora">
+        <div class="brand-mark" aria-hidden="true">TO</div>
       </div>
       <div class="title-block">
-        <p class="eyebrow">Getch Servicos</p>
-        <h1>Tarefas de obras</h1>
+        <p class="eyebrow">App de tarefas</p>
+        <h1>Tarefas</h1>
         <p class="session-label" id="sessionLabel"></p>
       </div>
     </div>
@@ -372,11 +372,11 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=37"></script>
-  <script src="app.js?v=37"></script>
+  <script src="supabase-config.js?v=38"></script>
+  <script src="app.js?v=38"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js?v=37')
+      navigator.serviceWorker.register('sw.js?v=38')
         .catch(() => {});
     }
 

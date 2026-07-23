@@ -3,7 +3,7 @@ const oldStorageKey = 'gtech-tarefas-obras-v1';
 const inventoryStorageKey = 'gtech-inventario-v1';
 const dbName = 'gtech-tarefas-obras-arquivos';
 const dbStore = 'midias';
-const appVersion = '37-pedidos-material';
+const appVersion = '38-app-tarefas';
 const sessionKey = 'gtech-sessao-v1';
 const cloudTasksTable = 'tarefas_obras';
 const cloudUsersTable = 'usuarios_app';
@@ -697,7 +697,7 @@ function notifyNewTasks(newTasks) {
     : `${newTasks.length} novas tarefas para executar`;
 
   if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification('Getch Servicos', { body: message });
+    new Notification('App de Tarefas', { body: message });
   } else {
     alert(message);
   }
@@ -2094,7 +2094,7 @@ async function shareEvidence(id) {
   const message = [
     `ENVIAR PARA: ${responsibleName} - ${responsiblePhoneLabel}`,
     ``,
-    `Gtech Servicos - evidencias da tarefa`,
+    `App de Tarefas - evidencias da tarefa`,
     `Tarefa: ${task.title}`,
     `Funcionario: ${task.employee}`,
     `Obra: ${task.site}`,
@@ -2672,7 +2672,7 @@ function alertInventoryMove(id) {
   if (note === null) return;
 
   const message = [
-    'Getch Servicos - aviso de mudanca de ferramenta',
+    'App de Tarefas - aviso de mudanca de ferramenta',
     `Item: ${item.name}`,
     `Quantidade: ${formatNumber(item.quantity)} ${item.unit || 'un'}`,
     `Responsavel atual: ${item.employee || 'Estoque'}`,

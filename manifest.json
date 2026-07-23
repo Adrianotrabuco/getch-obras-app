@@ -1,28 +1,34 @@
-{
-  "name": "Getch Servicos - Tarefas de Obras",
-  "short_name": "Getch Obras",
-  "id": "/getch-obras-app/",
-  "start_url": "/getch-obras-app/",
-  "scope": "/getch-obras-app/",
-  "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
-  "orientation": "any",
-  "background_color": "#f4f6f7",
-  "theme_color": "#17212b",
-  "description": "App para tarefas de obras com fotos e videos de inicio e fim.",
-  "categories": ["business", "productivity"],
-  "icons": [
-    {
-      "src": "app-icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "app-icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+﻿{
+    "name":  "App de Tarefas",
+    "short_name":  "Tarefas",
+    "id":  "/getch-obras-app/",
+    "start_url":  "/getch-obras-app/",
+    "scope":  "/getch-obras-app/",
+    "display":  "standalone",
+    "display_override":  [
+                             "standalone",
+                             "minimal-ui"
+                         ],
+    "orientation":  "any",
+    "background_color":  "#f4f6f7",
+    "theme_color":  "#17212b",
+    "description":  "App para controlar tarefas com fotos, videos e estoque.",
+    "categories":  [
+                       "business",
+                       "productivity"
+                   ],
+    "icons":  [
+                  {
+                      "src":  "app-icon-192.png",
+                      "sizes":  "192x192",
+                      "type":  "image/png",
+                      "purpose":  "any maskable"
+                  },
+                  {
+                      "src":  "app-icon-512.png",
+                      "sizes":  "512x512",
+                      "type":  "image/png",
+                      "purpose":  "any maskable"
+                  }
+              ]
 }
