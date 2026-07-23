@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Servico Certo">
+  <rect width="512" height="512" rx="104" fill="#17212b"/>
+  <circle cx="256" cy="220" r="142" fill="#ffffff"/>
+  <path d="M168 220c0-48 36-82 88-82 32 0 58 12 76 34" fill="none" stroke="#116149" stroke-width="34" stroke-linecap="round"/>
+  <path d="M344 174c-18-22-44-36-82-36-54 0-94 34-94 82s40 82 94 82c38 0 66-15 84-39" fill="none" stroke="#116149" stroke-width="34" stroke-linecap="round"/>
+  <path d="M166 316l54 54 126-138" fill="none" stroke="#f2b544" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="256" y="452" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="62" font-weight="900" fill="#ffffff">SC</text>
+</svg>

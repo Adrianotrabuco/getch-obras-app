@@ -3,24 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>App de Tarefas</title>
+  <title>Servico Certo</title>
   <meta name="theme-color" content="#17212b">
-  <meta name="application-name" content="App de Tarefas">
+  <meta name="application-name" content="Servico Certo">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="App Tarefas">
+  <meta name="apple-mobile-web-app-title" content="Servico Certo">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="app-icon-192.png">
   <link rel="icon" type="image/png" sizes="192x192" href="app-icon-192.png">
-  <link rel="manifest" href="manifest.json?v=38">
-  <link rel="stylesheet" href="styles.css?v=38">
+  <link rel="manifest" href="manifest.json?v=39">
+  <link rel="stylesheet" href="styles.css?v=39">
 </head>
 <body>
   <section class="login-screen" id="loginScreen" aria-labelledby="loginTitle">
     <form class="login-card" id="loginForm">
-      <div class="brand-mark large" aria-hidden="true">TO</div>
-      <p class="eyebrow">App de tarefas</p>
+      <img class="logo-image login-logo service-logo" src="logo-servico-certo.svg" alt="Servico Certo">
+      <p class="eyebrow">Servico Certo</p>
       <h1 id="loginTitle">Entrar nas tarefas</h1>
+      <p class="owner-label">Propriedade de Adriano Trabuco</p>
       <label>
         <span>Usuario</span>
         <select id="loginUser" required>
@@ -43,11 +44,12 @@
   <header class="topbar">
     <div class="brand-row">
       <div class="logo-panel">
-        <div class="brand-mark" aria-hidden="true">TO</div>
+        <img class="logo-image top-logo service-logo" src="logo-servico-certo.svg" alt="Servico Certo">
       </div>
       <div class="title-block">
-        <p class="eyebrow">App de tarefas</p>
+        <p class="eyebrow">Servico Certo</p>
         <h1>Tarefas</h1>
+        <p class="owner-label top-owner">Propriedade de Adriano Trabuco</p>
         <p class="session-label" id="sessionLabel"></p>
       </div>
     </div>
@@ -372,11 +374,11 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=38"></script>
-  <script src="app.js?v=38"></script>
+  <script src="supabase-config.js?v=39"></script>
+  <script src="app.js?v=39"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js?v=38')
+      navigator.serviceWorker.register('sw.js?v=39')
         .catch(() => {});
     }
 

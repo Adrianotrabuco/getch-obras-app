@@ -81,6 +81,18 @@ button:disabled {
   font-size: 1.6rem;
 }
 
+.owner-label {
+  margin: -8px 0 4px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.top-owner {
+  margin: 6px 0 0;
+  color: rgba(232, 245, 239, 0.76);
+}
+
 .brand-row {
   display: flex;
   align-items: center;
@@ -114,23 +126,30 @@ button:disabled {
 }
 
 .login-logo {
-  width: min(230px, 78vw);
-  height: auto;
+  width: 118px;
+  height: 118px;
+  justify-self: center;
 }
 
 .top-logo {
-  width: 116px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
+}
+
+.service-logo {
+  border-radius: 18px;
+  background: #17212b;
+  box-shadow: 0 10px 22px rgba(18, 33, 43, 0.18);
 }
 
 .logo-panel {
   display: grid;
   place-items: center;
-  width: 132px;
+  width: 88px;
   min-height: 74px;
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 8px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 14px 26px rgba(0, 0, 0, 0.18);
 }
 
